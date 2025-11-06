@@ -11,6 +11,9 @@
         :root {
             --primary: #4361ee;
             --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --info: #7209b7;
+            --warning: #f72585;
         }
         
         .sidebar {
@@ -33,11 +36,15 @@
             border-left-color: white;
         }
         
-        .dashboard-card {
+        .stat-card {
             border-radius: 15px;
             border: none;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
         
         .chart-container {
@@ -51,19 +58,63 @@
         .performance-average { background-color: #fff3cd !important; }
         .performance-poor { background-color: #f8d7da !important; }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin: 0 auto;
         }
         
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .progress-thin {
+            height: 8px;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary);
+            border: 1px solid #dee2e6;
+        }
+        
+        .search-highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .quick-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        
+        .comparison-card {
+            border-left: 5px solid var(--primary);
+        }
+        
+        .term-selector {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .term-selector.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .comparison-chart {
+            height: 250px;
         }
     </style>
 </head>
@@ -90,6 +141,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ url_for('score_details') }}" class="nav-link active">
+                                <i class="fas fa-chart-bar me-2"></i>Performance
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ url_for('add_student') }}" class="nav-link">
                                 <i class="fas fa-user-plus me-2"></i>Add Student
                             </a>
@@ -97,11 +153,6 @@
                         <li class="nav-item">
                             <a href="{{ url_for('admin_add_score') }}" class="nav-link">
                                 <i class="fas fa-plus-circle me-2"></i>Add Scores
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('score_details') }}" class="nav-link active">
-                                <i class="fas fa-chart-bar me-2"></i>Performance
                             </a>
                         </li>
                         <li class="nav-item mt-4">
@@ -125,16 +176,16 @@
                         </div>
                     </div>
 
-                    <!-- Student Selection -->
-                    <div class="dashboard-card" style="padding: 24px;">
-                        <div class="card-header bg-white border-0 pb-3">
+                    <!-- Student Selection and Search -->
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Find Student for Detailed Analysis</h5>
                         </div>
                         <div class="card-body">
                             <form method="GET" action="{{ url_for('score_details') }}" class="row g-3">
                                 <div class="col-md-5">
                                     <label class="form-label">Select by Student ID</label>
-                                    <select name="student_id" class="form-select">
+                                    <select name="student_id" class="form-select" id="studentSelect">
                                         <option value="">All Students - Overview</option>
                                         {% for student in students %}
                                         <option value="{{ student.student_id }}" {% if selected_student == student.student_id %}selected{% endif %}>
@@ -162,200 +213,474 @@
                                     </a>
                                 </div>
                             </form>
+                            
+                            {% if search_name and not selected_student_info %}
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No student found with name containing "{{ search_name }}"
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
 
                     <!-- Individual Student Analysis -->
                     {% if selected_student_info %}
-                    <div class="dashboard-card" style="padding: 24px;">
-                        <div class="card-header bg-white border-0 pb-3">
-                            <h5 class="card-title mb-0">Student Analysis: {{ selected_student_info.name }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <!-- Student Stats -->
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <h4 class="text-primary">{{ stats.total_exams }}</h4>
-                                    <small>Total Exams</small>
-                                </div>
-                                <div class="stat-card">
-                                    <h4 class="text-success">{{ "%.1f"|format(stats.overall_avg) if stats.overall_avg else '0' }}%</h4>
-                                    <small>Overall Average</small>
-                                </div>
-                                <div class="stat-card">
-                                    <h4 class="text-info">{{ "%.1f"|format(stats.highest_score) if stats.highest_score else '0' }}%</h4>
-                                    <small>Highest Score</small>
-                                </div>
-                                <div class="stat-card">
-                                    <h4 class="text-warning">{{ "%.1f"|format(stats.lowest_score) if stats.lowest_score else '0' }}%</h4>
-                                    <small>Lowest Score</small>
-                                </div>
-                                <div class="stat-card">
-                                    <h4 class="text-secondary">{{ stats.terms_count }}</h4>
-                                    <small>Terms</small>
+                    <div class="row mb-4" id="studentAnalysis">
+                        <!-- Student Profile Card -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card stat-card text-center">
+                                <div class="card-body">
+                                    <div class="student-avatar mb-3">
+                                        {{ selected_student_info.name[0] }}
+                                    </div>
+                                    <h4 class="card-title">{{ selected_student_info.name }}</h4>
+                                    <p class="text-muted">Student ID: {{ selected_student_info.student_id }}</p>
+                                    <p class="text-muted">Class: {{ selected_student_info.class }}</p>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <h5 class="text-primary">{{ stats.total_exams }}</h5>
+                                            <small>Total Exams</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <h5 class="text-success">{{ "%.1f"|format(stats.overall_avg) }}%</h5>
+                                            <small>Average Score</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Charts -->
+                        <!-- Quick Stats -->
+                        <div class="col-md-8">
+                            <div class="quick-stats-grid">
+                                <div class="card stat-card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h3>{{ "%.1f"|format(stats.highest_score) }}%</h3>
+                                        <small>Highest Score</small>
+                                    </div>
+                                </div>
+                                <div class="card stat-card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h3>{{ "%.1f"|format(stats.lowest_score) }}%</h3>
+                                        <small>Lowest Score</small>
+                                    </div>
+                                </div>
+                                <div class="card stat-card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h3>{{ stats.terms_count }}</h3>
+                                        <small>Terms</small>
+                                    </div>
+                                </div>
+                                <div class="card stat-card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h3>{{ "%.1f"|format(stats.overall_avg) }}%</h3>
+                                        <small>Overall Avg</small>
+                                    </div>
+                                </div>
+                                <div class="card stat-card bg-secondary text-white">
+                                    <div class="card-body text-center">
+                                        <h3>{{ 'Female' if selected_student_info.gender == 'F' else 'Male' }}</h3>
+                                        <small>Gender</small>
+                                    </div>
+                                </div>
+                                <div class="card stat-card bg-dark text-white">
+                                    <div class="card-body text-center">
+                                        <h3>
+                                            {% set avg_score = stats.overall_avg %}
+                                            {% if avg_score >= 90 %}
+                                                <span class="badge bg-success">Excellent</span>
+                                            {% elif avg_score >= 75 %}
+                                                <span class="badge bg-info">Good</span>
+                                            {% elif avg_score >= 50 %}
+                                                <span class="badge bg-warning">Average</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Poor</span>
+                                            {% endif %}
+                                        </h3>
+                                        <small>Performance</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Term Comparison Section -->
+                    {% if term_progression %}
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">Term Performance</h5>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="chart-container">
-                                        <canvas id="performanceChart"></canvas>
+                                    <div class="comparison-chart">
+                                        <canvas id="termComparisonChart"></canvas>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="chart-container">
-                                        <canvas id="componentChart"></canvas>
+                                    <div class="comparison-chart">
+                                        <canvas id="componentComparisonChart"></canvas>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     {% endif %}
+                    {% endif %}
 
-                    <!-- All Scores Table -->
-                    <div class="dashboard-card" style="padding: 24px;">
-                        <div class="card-header bg-white border-0 py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-table me-2"></i>All Score Records
-                                </h5>
-                                <span class="badge bg-primary">{{ scores|length }} records</span>
+                    <!-- Charts and Analytics -->
+                    <ul class="nav nav-tabs mb-4" id="analyticsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab">
+                                <i class="fas fa-chart-line me-2"></i>Performance Analytics
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="progress-tab" data-bs-toggle="tab" data-bs-target="#progress" type="button" role="tab">
+                                <i class="fas fa-trending-up me-2"></i>Progress Tracking
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">
+                                <i class="fas fa-list me-2"></i>Score Details
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="analyticsTabsContent">
+                        <!-- Performance Tab -->
+                        <div class="tab-pane fade show active" id="performance" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card stat-card">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title mb-0">Performance Distribution</h5>
+                                            <span class="badge bg-primary">{{ scores|length }} Records</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-container">
+                                                <canvas id="performanceChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card stat-card">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title mb-0">Component Performance</h5>
+                                            <span class="badge bg-info">All Components</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-container">
+                                                <canvas id="componentChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="ps-3">Student</th>
-                                            <th>Class</th>
-                                            <th>Term</th>
-                                            <th>Subject</th>
-                                            <th>Quiz</th>
-                                            <th>Homework</th>
-                                            <th>Midterm</th>
-                                            <th>Final</th>
-                                            <th>Average</th>
-                                            <th class="pe-3">Performance</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for score in scores %}
-                                        <tr class="performance-{{ score.performance_level.lower() }}">
-                                            <td class="fw-semibold ps-3">
-                                                {{ score.name }}
-                                                <br><small class="text-muted">{{ score.student_id }}</small>
-                                            </td>
-                                            <td>Class {{ score.class }}</td>
-                                            <td><strong>{{ score.term }}</strong></td>
-                                            <td>{{ score.subject or 'General' }}</td>
-                                            <td>{{ "%.1f"|format(score.quiz) if score.quiz else 'N/A' }}</td>
-                                            <td>{{ "%.1f"|format(score.homework) if score.homework else 'N/A' }}</td>
-                                            <td>{{ "%.1f"|format(score.midterm) if score.midterm else 'N/A' }}</td>
-                                            <td>{{ "%.1f"|format(score.final) if score.final else 'N/A' }}</td>
-                                            <td class="fw-bold">
-                                                <span class="{% if score.average >= 80 %}text-success{% elif score.average >= 60 %}text-warning{% else %}text-danger{% endif %}">
-                                                    {{ "%.1f"|format(score.average) }}%
-                                                </span>
-                                            </td>
-                                            <td class="pe-3">
-                                                <span class="badge bg-{{ 'success' if score.performance_level == 'Excellent' else 'info' if score.performance_level == 'Good' else 'warning' if score.performance_level == 'Average' else 'danger' }}">
-                                                    {{ score.performance_level }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        {% else %}
-                                        <tr>
-                                            <td colspan="10" class="text-center py-5">
-                                                <i class="fas fa-chart-bar fa-3x mb-3" style="color: #d1d5db;"></i>
-                                                <p class="h5 mb-2">No score records found</p>
-                                                <p class="text-muted">
-                                                    {% if selected_student or search_name %}
-                                                    No scores match your current filters.
-                                                    {% else %}
-                                                    There are no score records in the system yet.
-                                                    {% endif %}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+
+                        <!-- Progress Tab -->
+                        <div class="tab-pane fade" id="progress" role="tabpanel">
+                            <div class="row">
+                                <div class="col-12 mb-4">
+                                    <div class="card stat-card">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title mb-0">Academic Progress Over Time</h5>
+                                            <span class="badge bg-success">{{ term_progression|length }} Terms</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-container">
+                                                <canvas id="progressChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details Tab -->
+                        <div class="tab-pane fade" id="details" role="tabpanel">
+                            <div class="card stat-card">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">All Score Records</h5>
+                                    <span class="badge bg-secondary">{{ scores|length }} Records</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Student</th>
+                                                    <th>Class</th>
+                                                    <th>Term</th>
+                                                    <th>Quiz</th>
+                                                    <th>Homework</th>
+                                                    <th>Midterm</th>
+                                                    <th>Final</th>
+                                                    <th>Average</th>
+                                                    <th>Performance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for score in scores %}
+                                                <tr class="performance-{{ score.performance_level.lower() }}">
+                                                    <td>
+                                                        <strong>{{ score.name }}</strong>
+                                                        <br><small class="text-muted">{{ score.student_id }}</small>
+                                                    </td>
+                                                    <td>Class {{ score.class }}</td>
+                                                    <td><strong>{{ score.term }}</strong></td>
+                                                    <td>{{ "%.1f"|format(score.quiz) if score.quiz else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(score.homework) if score.homework else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(score.midterm) if score.midterm else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(score.final) if score.final else 'N/A' }}</td>
+                                                    <td><strong>{{ "%.1f"|format(score.average) }}</strong></td>
+                                                    <td>
+                                                        <span class="badge bg-{{ 'success' if score.performance_level == 'Excellent' else 'info' if score.performance_level == 'Good' else 'warning' if score.performance_level == 'Average' else 'danger' }}">
+                                                            {{ score.performance_level }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="9" class="text-center text-muted py-4">
+                                                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                                        <p>No score records found</p>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Overview for All Students -->
+                    {% if not selected_student_info %}
+                    <div class="row" id="overviewSection">
+                        <div class="col-12">
+                            <div class="card stat-card">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Overall Performance Overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center mb-4">
+                                        <div class="col-md-3">
+                                            <h3 class="text-primary">{{ stats.total_exams }}</h3>
+                                            <small>Total Exams</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h3 class="text-success">{{ "%.1f"|format(stats.overall_avg) }}%</h3>
+                                            <small>Overall Average</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h3 class="text-info">{{ stats.students_count }}</h3>
+                                            <small>Students</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h3 class="text-warning">{{ term_progression|length }}</h3>
+                                            <small>Terms</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="chart-container">
+                                                <canvas id="overallPerformanceChart"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="chart-container">
+                                                <canvas id="termOverviewChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Simple initialization - data comes from Flask backend
         document.addEventListener('DOMContentLoaded', function() {
-            {% if selected_student_info %}
+            console.log('Performance analytics page loaded');
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
             // Performance Distribution Chart
-            const performanceData = {{ performance_distribution | tojson }};
-            const performanceLevels = ['Excellent', 'Good', 'Average', 'Poor'];
-            const performanceCounts = performanceLevels.map(level => {
-                const found = performanceData.find(item => item.performance_level === level);
-                return found ? found.count : 0;
-            });
+            const performanceCounts = {
+                'Excellent': {{ performance_distribution|selectattr('performance_level', 'equalto', 'Excellent')|map(attribute='count')|first|default(0) }},
+                'Good': {{ performance_distribution|selectattr('performance_level', 'equalto', 'Good')|map(attribute='count')|first|default(0) }},
+                'Average': {{ performance_distribution|selectattr('performance_level', 'equalto', 'Average')|map(attribute='count')|first|default(0) }},
+                'Poor': {{ performance_distribution|selectattr('performance_level', 'equalto', 'Poor')|map(attribute='count')|first|default(0) }}
+            };
 
-            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(performanceCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: performanceLevels,
-                    datasets: [{
-                        data: performanceCounts,
-                        backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Component Performance Chart
-            const componentAverages = {{ component_averages | tojson }};
-            const componentCtx = document.getElementById('componentChart').getContext('2d');
-            new Chart(componentCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Quiz', 'Homework', 'Midterm', 'Final'],
-                    datasets: [{
-                        label: 'Average Scores',
-                        data: [
-                            componentAverages.avg_quiz || 0,
-                            componentAverages.avg_homework || 0,
-                            componentAverages.avg_midterm || 0,
-                            componentAverages.avg_final || 0
-                        ],
-                        backgroundColor: '#4361ee'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Average Score (%)'
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                new Chart(performanceCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Excellent', 'Good', 'Average', 'Poor'],
+                        datasets: [{
+                            data: [
+                                performanceCounts.Excellent,
+                                performanceCounts.Good,
+                                performanceCounts.Average,
+                                performanceCounts.Poor
+                            ],
+                            backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
                             }
                         }
                     }
-                }
-            });
-            {% endif %}
+                });
+            }
+
+            // Component Performance Chart
+            const componentCtx = document.getElementById('componentChart');
+            if (componentCtx && {{ component_averages | tojson }}) {
+                const componentAverages = {{ component_averages | tojson }};
+                new Chart(componentCtx.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Quiz', 'Homework', 'Midterm', 'Final'],
+                        datasets: [{
+                            label: 'Average Scores',
+                            data: [
+                                componentAverages.avg_quiz || 0,
+                                componentAverages.avg_homework || 0,
+                                componentAverages.avg_midterm || 0,
+                                componentAverages.avg_final || 0
+                            ],
+                            backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                            borderColor: '#4361ee',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Progress Chart
+            const progressCtx = document.getElementById('progressChart');
+            if (progressCtx && {{ term_progression | tojson }}) {
+                const termProgression = {{ term_progression | tojson }};
+                const terms = termProgression.map(item => item.term);
+                const averages = termProgression.map(item => item.term_avg);
+                
+                new Chart(progressCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: terms,
+                        datasets: [{
+                            label: 'Average Score',
+                            data: averages,
+                            borderColor: '#7209b7',
+                            backgroundColor: 'rgba(114, 9, 183, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Term Comparison Chart
+            const termComparisonCtx = document.getElementById('termComparisonChart');
+            if (termComparisonCtx && {{ term_progression | tojson }}) {
+                const termProgression = {{ term_progression | tojson }};
+                const terms = termProgression.map(item => item.term);
+                const averages = termProgression.map(item => item.term_avg);
+                
+                new Chart(termComparisonCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: terms,
+                        datasets: [{
+                            label: 'Average Score',
+                            data: averages,
+                            backgroundColor: '#4361ee'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Component Comparison Chart
+            const componentComparisonCtx = document.getElementById('componentComparisonChart');
+            if (componentComparisonCtx && {{ component_averages | tojson }}) {
+                const componentAverages = {{ component_averages | tojson }};
+                new Chart(componentComparisonCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Quiz', 'Homework', 'Midterm', 'Final'],
+                        datasets: [{
+                            label: 'Average Scores',
+                            data: [
+                                componentAverages.avg_quiz || 0,
+                                componentAverages.avg_homework || 0,
+                                componentAverages.avg_midterm || 0,
+                                componentAverages.avg_final || 0
+                            ],
+                            backgroundColor: '#4361ee'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

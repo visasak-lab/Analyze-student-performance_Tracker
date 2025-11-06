@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -14,12 +15,6 @@
             --success: #4cc9f0;
             --info: #7209b7;
             --warning: #f72585;
-            --light-bg: #f8f9fa;
-        }
-        
-        body {
-            background-color: var(--light-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .sidebar {
@@ -27,229 +22,78 @@
             color: white;
             min-height: 100vh;
             padding: 0;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 250px;
         }
         
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.8);
             padding: 1rem 1.5rem;
             border-left: 4px solid transparent;
-            transition: all 0.3s ease;
-            margin: 0.2rem 0.5rem;
-            border-radius: 8px;
+            transition: all 0.3s;
         }
         
-        .sidebar .nav-link:hover {
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
             color: white;
-            background: rgba(255, 255, 255, 0.15);
-            border-left-color: rgba(255, 255, 255, 0.5);
-            transform: translateX(5px);
-        }
-        
-        .sidebar .nav-link.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             border-left-color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .sidebar-brand {
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1rem;
-        }
-        
-        .sidebar-brand h4 {
-            margin: 0;
-            font-weight: 700;
-        }
-        
-        .sidebar-brand small {
-            opacity: 0.8;
-            font-size: 0.85rem;
-        }
-        
-        .main-content {
-            margin-left: 250px;
-            min-height: 100vh;
-            background: var(--light-bg);
-        }
-        
-        .navbar-custom {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 2rem;
         }
         
         .stat-card {
-            border-radius: 16px;
+            border-radius: 15px;
             border: none;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
         }
         
         .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-        
-        .stat-card .card-body {
-            padding: 1.5rem;
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            transform: translateY(-5px);
         }
         
         .chart-container {
             position: relative;
             height: 300px;
             width: 100%;
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
         
-        .dashboard-section {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .section-title {
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .table-custom {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        
-        .table-custom thead th {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .timeframe-btn.active {
+            background-color: var(--primary);
             color: white;
-            border: none;
-            padding: 1rem;
-            font-weight: 600;
         }
-        
-        .table-custom tbody tr {
-            transition: all 0.3s ease;
-        }
-        
-        .table-custom tbody tr:hover {
-            background-color: #f8f9fa;
-            transform: scale(1.01);
-        }
-        
-        .badge-custom {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            margin-top: 1rem;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+
+        .empty-chart {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            height: 100%;
+            color: #6c757d;
+            font-style: italic;
         }
-        
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-radius: 12px;
-            background: #f8f9fa;
-            margin-bottom: 0.75rem;
-            transition: all 0.3s ease;
-        }
-        
-        .activity-item:hover {
+
+        .comparison-chart {
             background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateX(5px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        .activity-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .legend-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+            margin: 0 10px 5px 0;
         }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -258,78 +102,65 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar">
-                <div class="d-flex flex-column p-0">
-                    <div class="sidebar-brand">
+                <div class="d-flex flex-column p-3">
+                    <div class="text-center mb-4">
                         <h4><i class="fas fa-graduation-cap me-2"></i>EduTrack</h4>
                         <small>Admin Portal</small>
                     </div>
                     
-                    <ul class="nav nav-pills flex-column px-2">
+                    <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
-                            <a href="{{ url_for('admin_dashboard') }}" class="nav-link active">
+                            <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
                                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('list_students') }}" class="nav-link">
+                            <a href="{{ url_for('list_students') }}" class="nav-link {% if request.endpoint == 'list_students' %}active{% endif %}">
                                 <i class="fas fa-users me-2"></i>Students
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('score_details') }}" class="nav-link">
+                            <a href="{{ url_for('score_details') }}" class="nav-link {% if request.endpoint == 'score_details' %}active{% endif %}">
                                 <i class="fas fa-chart-bar me-2"></i>Performance
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('add_student') }}" class="nav-link">
+                            <a href="{{ url_for('add_student') }}" class="nav-link {% if request.endpoint == 'add_student' %}active{% endif %}">
                                 <i class="fas fa-user-plus me-2"></i>Add Student
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('admin_add_score') }}" class="nav-link">
+                            <a href="{{ url_for('admin_add_score') }}" class="nav-link {% if request.endpoint == 'admin_add_score' %}active{% endif %}">
                                 <i class="fas fa-plus-circle me-2"></i>Add Scores
                             </a>
                         </li>
+                        <li class="nav-item mt-4">
+                            <a href="{{ url_for('logout') }}" class="nav-link"
+                            onclick="return confirm('Are you sure you want to logout?');">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
                     </ul>
-                    
-                    <div class="mt-auto p-3">
-                        <div class="user-profile">
-                            <div class="user-avatar">
-                                {{ username[0]|upper }}
-                            </div>
-                            <div class="user-info">
-                                <div class="fw-semibold">{{ username }}</div>
-                                <small class="opacity-75">Administrator</small>
-                            </div>
-                        </div>
-                        <a href="{{ url_for('logout') }}" class="nav-link mt-2 text-center"
-                           onclick="return confirm('Are you sure you want to logout?');">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                        </a>
-                    </div>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
-                <!-- Header -->
-                <nav class="navbar-custom">
-                    <div class="container-fluid">
-                        <h1 class="h3 mb-0">Admin Dashboard</h1>
-                        <div class="d-flex align-items-center">
-                            <span class="text-muted me-3">Welcome back, {{ username }}</span>
-                            <span class="badge bg-primary">Admin</span>
+            <div class="col-md-9 col-lg-10" style="background: #f8f9fa; min-height: 100vh;">
+                <div class="container-fluid py-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Admin Dashboard</h1>
+                        <div class="text-end">
+                            <span class="text-muted">Welcome, {{ username }}</span>
+                            <span class="badge bg-primary ms-2">Admin</span>
                         </div>
                     </div>
-                </nav>
 
-                <div class="container-fluid py-4">
                     <!-- Flash Messages -->
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mb-4">
-                                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
@@ -337,140 +168,258 @@
                         {% endif %}
                     {% endwith %}
 
-                    <!-- Quick Stats -->
-                    <div class="quick-stats">
-                        <div class="stat-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h3 class="mb-1">{{ total_students }}</h3>
-                                        <p class="text-muted mb-0">Total Students</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="stat-icon bg-success bg-opacity-10 text-success">
-                                        <i class="fas fa-chart-bar"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h3 class="mb-1">{{ total_scores }}</h3>
-                                        <p class="text-muted mb-0">Total Scores</p>
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card stat-card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Total Students</h6>
+                                            <h2>{{ total_students }}</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-users fa-2x"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="stat-icon bg-info bg-opacity-10 text-info">
-                                        <i class="fas fa-chart-line"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h3 class="mb-1">{{ "%.1f"|format(overall_avg) }}%</h3>
-                                        <p class="text-muted mb-0">Overall Average</p>
+                        <div class="col-md-3 mb-3">
+                            <div class="card stat-card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Total Scores</h6>
+                                            <h2>{{ total_scores }}</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-chart-bar fa-2x"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                                        <i class="fas fa-school"></i>
+                        <div class="col-md-3 mb-3">
+                            <div class="card stat-card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Overall Average</h6>
+                                            <h2>{{ "%.1f"|format(overall_avg|default(0)) }}%</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-chart-line fa-2x"></i>
+                                        </div>
                                     </div>
-                                    <div class="ms-3">
-                                        <h3 class="mb-1">{{ class_labels|length }}</h3>
-                                        <p class="text-muted mb-0">Active Classes</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card stat-card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Classes</h6>
+                                            <h2>{{ class_labels|length }}</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-school fa-2x"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Charts Section -->
+                    <!-- Analytics Section -->
                     <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card stat-card">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Performance Analytics</h5>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm timeframe-btn active" data-timeframe="term">Term</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm timeframe-btn" data-timeframe="monthly">Monthly</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm timeframe-btn" data-timeframe="yearly">Yearly</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="analyticsChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Charts Section -->
+                    <div class="row mt-4">
+                        <!-- Class Comparison Chart -->
                         <div class="col-md-6">
-                            <div class="dashboard-section">
-                                <h5 class="section-title">
-                                    <i class="fas fa-chart-pie"></i>
-                                    Performance Distribution
-                                </h5>
-                                <div class="chart-container">
-                                    <canvas id="performanceChart"></canvas>
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Class Performance Comparison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="classComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Term Comparison Chart -->
+                        <div class="col-md-6">
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Term Performance Comparison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="termComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Gender Comparison Chart -->
+                        <div class="col-md-6">
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Gender Performance Comparison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="genderComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Component Comparison Chart -->
+                        <div class="col-md-6">
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Component Comparison by Class</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="componentComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Original Charts and Data -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Performance Distribution</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="performanceChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Component Averages</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="componentChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="dashboard-section">
-                                <h5 class="section-title">
-                                    <i class="fas fa-chart-bar"></i>
-                                    Class Averages
-                                </h5>
-                                <div class="chart-container">
-                                    <canvas id="classChart"></canvas>
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Class Averages</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="classChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card stat-card mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Gender Performance</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="genderChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Recent Activities -->
-                    <div class="dashboard-section">
-                        <h5 class="section-title">
-                            <i class="fas fa-clock"></i>
-                            Recent Activities
-                        </h5>
-                        <div class="table-responsive">
-                            <table class="table table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Student</th>
-                                        <th>Class</th>
-                                        <th>Term</th>
-                                        <th>Quiz</th>
-                                        <th>Homework</th>
-                                        <th>Midterm</th>
-                                        <th>Final</th>
-                                        <th>Average</th>
-                                        <th>Performance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for activity in recent_activities %}
-                                    <tr>
-                                        <td class="fw-semibold">{{ activity.name }}</td>
-                                        <td>Class {{ activity.class }}</td>
-                                        <td>{{ activity.term }}</td>
-                                        <td>{{ "%.1f"|format(activity.quiz) if activity.quiz else 'N/A' }}</td>
-                                        <td>{{ "%.1f"|format(activity.homework) if activity.homework else 'N/A' }}</td>
-                                        <td>{{ "%.1f"|format(activity.midterm) if activity.midterm else 'N/A' }}</td>
-                                        <td>{{ "%.1f"|format(activity.final) if activity.final else 'N/A' }}</td>
-                                        <td><strong>{{ "%.1f"|format(activity.average) }}%</strong></td>
-                                        <td>
-                                            <span class="badge-custom bg-{{ 'success' if activity.performance_level == 'Excellent' else 'info' if activity.performance_level == 'Good' else 'warning' if activity.performance_level == 'Average' else 'danger' }}">
-                                                {{ activity.performance_level }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <td colspan="9" class="text-center py-4">
-                                            <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
-                                            <p class="text-muted mb-0">No recent activities found</p>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card stat-card">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0">Recent Activities</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Student</th>
+                                                    <th>Class</th>
+                                                    <th>Term</th>
+                                                    <th>Quiz</th>
+                                                    <th>Homework</th>
+                                                    <th>Midterm</th>
+                                                    <th>Final</th>
+                                                    <th>Average</th>
+                                                    <th>Performance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for activity in recent_activities %}
+                                                <tr>
+                                                    <td>{{ activity.name }}</td>
+                                                    <td>{{ activity.class }}</td>
+                                                    <td>{{ activity.term }}</td>
+                                                    <td>{{ "%.1f"|format(activity.quiz) if activity.quiz else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(activity.homework) if activity.homework else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(activity.midterm) if activity.midterm else 'N/A' }}</td>
+                                                    <td>{{ "%.1f"|format(activity.final) if activity.final else 'N/A' }}</td>
+                                                    <td><strong>{{ "%.1f"|format(activity.average) }}%</strong></td>
+                                                    <td>
+                                                        <span class="badge bg-{{ 'success' if activity.performance_level == 'Excellent' else 'info' if activity.performance_level == 'Good' else 'warning' if activity.performance_level == 'Average' else 'danger' }}">
+                                                            {{ activity.performance_level }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="9" class="text-center text-muted py-3">
+                                                        <i class="fas fa-info-circle me-2"></i>No recent activities found
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -479,10 +428,23 @@
     </div>
 
     <script>
+        // Safety check for empty data
+        function safeChartData(data, defaultValue = []) {
+            return data && data.length > 0 ? data : defaultValue;
+        }
+
+        // Check if chart canvas exists and create chart
+        function createChartIfExists(canvasId, config) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                return new Chart(canvas.getContext('2d'), config);
+            }
+            return null;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Performance Distribution Chart
-            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(performanceCtx, {
+            createChartIfExists('performanceChart', {
                 type: 'doughnut',
                 data: {
                     labels: ['Excellent', 'Good', 'Average', 'Poor'],
@@ -493,39 +455,105 @@
                             {{ performance_counts.get('Average', 0) }},
                             {{ performance_counts.get('Poor', 0) }}
                         ],
-                        backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
+                        backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545']
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
+                            position: 'bottom'
                         }
-                    },
-                    cutout: '65%'
+                    }
                 }
             });
 
             // Class Averages Chart
-            const classCtx = document.getElementById('classChart').getContext('2d');
-            new Chart(classCtx, {
+            createChartIfExists('classChart', {
                 type: 'bar',
                 data: {
-                    labels: {{ class_labels | tojson }},
+                    labels: safeChartData({{ class_labels | tojson }}, ['No Data']),
                     datasets: [{
                         label: 'Average Score',
-                        data: {{ class_scores | tojson }},
-                        backgroundColor: '#4361ee',
-                        borderRadius: 8,
-                        borderSkipped: false
+                        data: safeChartData({{ class_scores | tojson }}, [0]),
+                        backgroundColor: '#007bff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Average Score (%)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Component Averages Chart (renamed from Subject Averages)
+            createChartIfExists('componentChart', {
+                type: 'radar',
+                data: {
+                    labels: safeChartData({{ subject_labels | tojson }}, ['Quiz', 'Homework', 'Midterm', 'Final']),
+                    datasets: [{
+                        label: 'Component Averages',
+                        data: safeChartData({{ subject_scores | tojson }}, [0, 0, 0, 0]),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gender Performance Chart
+            createChartIfExists('genderChart', {
+                type: 'pie',
+                data: {
+                    labels: safeChartData({{ gender_labels | tojson }}, ['No Data']),
+                    datasets: [{
+                        data: safeChartData({{ gender_scores | tojson }}, [1]),
+                        backgroundColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#ff9f40']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Analytics Chart
+            const analyticsChart = createChartIfExists('analyticsChart', {
+                type: 'line',
+                data: {
+                    labels: safeChartData({{ term_labels | tojson }}, ['No Data']),
+                    datasets: [{
+                        label: 'Average Score',
+                        data: safeChartData({{ term_scores | tojson }}, [0]),
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
@@ -538,26 +566,250 @@
                             title: {
                                 display: true,
                                 text: 'Average Score (%)'
-                            },
-                            grid: {
-                                drawBorder: false
                             }
                         },
                         x: {
-                            grid: {
-                                display: false
+                            title: {
+                                display: true,
+                                text: 'Term'
                             }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
                         }
                     }
                 }
             });
+
+            // NEW: Class Comparison Chart (Bar Chart)
+            createChartIfExists('classComparisonChart', {
+                type: 'bar',
+                data: {
+                    labels: safeChartData({{ class_comparison_labels | tojson }}, ['No Data']),
+                    datasets: [{
+                        label: 'Average Score',
+                        data: safeChartData({{ class_comparison_scores | tojson }}, [0]),
+                        backgroundColor: ['#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0'],
+                        borderColor: ['#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Average Score (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Class'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const index = context.dataIndex;
+                                    const count = {{ class_student_counts | tojson }}[index];
+                                    return `Students: ${count}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: Term Comparison Chart (Line Chart)
+            createChartIfExists('termComparisonChart', {
+                type: 'line',
+                data: {
+                    labels: safeChartData({{ term_comparison_labels | tojson }}, ['No Data']),
+                    datasets: [{
+                        label: 'Average Score',
+                        data: safeChartData({{ term_comparison_scores | tojson }}, [0]),
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Average Score (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Term'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const index = context.dataIndex;
+                                    const count = {{ term_record_counts | tojson }}[index];
+                                    return `Records: ${count}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: Gender Comparison Chart (Bar Chart)
+            createChartIfExists('genderComparisonChart', {
+                type: 'bar',
+                data: {
+                    labels: safeChartData({{ gender_comparison_labels | tojson }}, ['No Data']),
+                    datasets: [
+                        {
+                            label: 'Average Score',
+                            data: safeChartData({{ gender_comparison_scores | tojson }}, [0]),
+                            backgroundColor: ['#ff6384', '#36a2eb'],
+                            borderColor: ['#ff6384', '#36a2eb'],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Average Score (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const index = context.dataIndex;
+                                    const count = {{ gender_record_counts | tojson }}[index];
+                                    return `Records: ${count}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: Component Comparison Chart (Radar Chart)
+            const componentComparisonChart = createChartIfExists('componentComparisonChart', {
+                type: 'radar',
+                data: {
+                    labels: ['Quiz', 'Homework', 'Midterm', 'Final'],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Populate component comparison chart with class data
+            if (componentComparisonChart) {
+                const classComponentData = {{ class_component_data | tojson }};
+                const colors = ['#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0'];
+                let colorIndex = 0;
+                
+                for (const [className, components] of Object.entries(classComponentData)) {
+                    componentComparisonChart.data.datasets.push({
+                        label: className,
+                        data: components,
+                        backgroundColor: `${colors[colorIndex]}20`,
+                        borderColor: colors[colorIndex],
+                        borderWidth: 2,
+                        pointBackgroundColor: colors[colorIndex]
+                    });
+                    colorIndex = (colorIndex + 1) % colors.length;
+                }
+                componentComparisonChart.update();
+            }
+
+            // Timeframe buttons functionality
+            const timeframeBtns = document.querySelectorAll('.timeframe-btn');
+            timeframeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    timeframeBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const timeframe = this.dataset.timeframe;
+                    loadAnalyticsData(timeframe, analyticsChart);
+                });
+            });
+
+            function loadAnalyticsData(timeframe, chart) {
+                if (!chart) return;
+                
+                fetch(`/admin/analytics/${timeframe}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Error:', data.error);
+                            showChartError(chart, 'Error loading data');
+                            return;
+                        }
+                        
+                        if (!data.data || data.data.length === 0) {
+                            showChartError(chart, 'No data available');
+                            return;
+                        }
+                        
+                        const labels = data.data.map(item => item.term || item.year || item.week || 'No Label');
+                        const scores = data.data.map(item => {
+                            const score = parseFloat(item.avg_score || item.score || 0);
+                            return isNaN(score) ? 0 : score;
+                        });
+                        
+                        chart.data.labels = labels;
+                        chart.data.datasets[0].data = scores;
+                        chart.update();
+                    })
+                    .catch(error => {
+                        console.error('Error loading analytics:', error);
+                        showChartError(chart, 'Failed to load data');
+                    });
+            }
+
+            function showChartError(chart, message) {
+                if (chart) {
+                    chart.data.labels = [message];
+                    chart.data.datasets[0].data = [0];
+                    chart.update();
+                }
+            }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -13,37 +13,23 @@
             min-height: 100vh;
             padding: 0;
         }
-        
         .sidebar .nav-link {
             color: rgba(255, 255, 255, 0.8);
             padding: 1rem 1.5rem;
             border-left: 4px solid transparent;
             transition: all 0.3s;
         }
-        
         .sidebar .nav-link:hover, .sidebar .nav-link.active {
             color: white;
             background: rgba(255, 255, 255, 0.1);
             border-left-color: white;
         }
-        
         .form-container {
             background: white;
             border-radius: 15px;
             padding: 2rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
-        }
-        
-        .score-input {
-            max-width: 120px;
-        }
-        
-        .preview-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1.5rem;
-            border-left: 4px solid #4361ee;
         }
     </style>
 </head>
@@ -57,7 +43,6 @@
                         <h4><i class="fas fa-user-graduate me-2"></i>Student Portal</h4>
                         <small>{{ student.name }}</small>
                     </div>
-                    
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
                             <a href="{{ url_for('student_dashboard') }}" class="nav-link">
@@ -65,7 +50,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('student_add_score') }}" class="nav-link active">
+                            <a href="#" class="nav-link active">
                                 <i class="fas fa-plus-circle me-2"></i>Add Score
                             </a>
                         </li>
@@ -81,7 +66,6 @@
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10" style="background: #f8f9fa; min-height: 100vh;">
                 <div class="container-fluid py-4">
-                    <!-- Header -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1>Add New Score</h1>
                         <div class="text-end">
@@ -90,7 +74,6 @@
                         </div>
                     </div>
 
-                    <!-- Flash Messages -->
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
@@ -103,15 +86,11 @@
                     {% endwith %}
 
                     <div class="form-container">
-                        <h3 class="mb-4">
-                            <i class="fas fa-plus-circle me-2"></i>Enter Your Scores
-                        </h3>
-                        
+                        <h3 class="mb-4">Enter Your Scores</h3>
                         <form method="POST">
-                            <!-- Term Selection -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="term" class="form-label">Term *</label>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="term" class="form-label">Term</label>
                                     <select class="form-select" id="term" name="term" required>
                                         <option value="">Select Term</option>
                                         <option value="Term 1">Term 1</option>
@@ -122,67 +101,43 @@
                                 </div>
                             </div>
                             
-                            <!-- Score Inputs -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="border-bottom pb-2">Enter Your Scores (0-100)</h5>
-                                    <p class="text-muted">Enter at least one score to calculate your average</p>
-                                </div>
+                            <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="quiz" class="form-label">Quiz Score</label>
-                                    <input type="number" class="form-control score-input" id="quiz" name="quiz" 
-                                           min="0" max="100" step="0.1" placeholder="0-100"
-                                           oninput="calculateAverage()">
+                                    <input type="number" class="form-control" id="quiz" name="quiz" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="homework" class="form-label">Homework Score</label>
-                                    <input type="number" class="form-control score-input" id="homework" name="homework" 
-                                           min="0" max="100" step="0.1" placeholder="0-100"
-                                           oninput="calculateAverage()">
+                                    <input type="number" class="form-control" id="homework" name="homework" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="midterm" class="form-label">Midterm Score</label>
-                                    <input type="number" class="form-control score-input" id="midterm" name="midterm" 
-                                           min="0" max="100" step="0.1" placeholder="0-100"
-                                           oninput="calculateAverage()">
+                                    <input type="number" class="form-control" id="midterm" name="midterm" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="final" class="form-label">Final Score</label>
-                                    <input type="number" class="form-control score-input" id="final" name="final" 
-                                           min="0" max="100" step="0.1" placeholder="0-100"
-                                           oninput="calculateAverage()">
-                                </div>
-                            </div>
-
-                            <!-- Score Preview -->
-                            <div class="preview-card mb-4">
-                                <h6 class="mb-3">Score Preview</h6>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <strong>Calculated Average:</strong>
-                                        <span id="averageDisplay" class="ms-2 fw-bold">—</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Performance Level:</strong>
-                                        <span id="performanceDisplay" class="ms-2 badge">—</span>
-                                    </div>
+                                    <input type="number" class="form-control" id="final" name="final" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
                                 </div>
                             </div>
                             
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary btn-lg me-2">
-                                    <i class="fas fa-times me-2"></i>Cancel
-                                </a>
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-save me-2"></i>Save Score
                                 </button>
+                                <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
                             </div>
                         </form>
                     </div>
 
                     <!-- Recent Scores -->
-                    <div class="dashboard-card" style="padding: 24px;">
-                        <div class="card-header bg-white border-0">
+                    <div class="card">
+                        <div class="card-header">
                             <h5 class="card-title mb-0">Your Recent Scores</h5>
                         </div>
                         <div class="card-body">
@@ -223,74 +178,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function calculateAverage() {
-            const fields = ['quiz', 'homework', 'midterm', 'final'];
-            let sum = 0;
-            let count = 0;
-            
-            fields.forEach(field => {
-                const value = parseFloat(document.getElementById(field).value);
-                if (!isNaN(value)) {
-                    sum += value;
-                    count++;
-                }
-            });
-            
-            if (count > 0) {
-                const average = (sum / count).toFixed(2);
-                document.getElementById('averageDisplay').textContent = average + '%';
-                
-                // Determine performance level
-                let performanceLevel = '';
-                let badgeClass = '';
-                if (average >= 90) {
-                    performanceLevel = 'Excellent';
-                    badgeClass = 'bg-success';
-                } else if (average >= 80) {
-                    performanceLevel = 'Good';
-                    badgeClass = 'bg-info';
-                } else if (average >= 70) {
-                    performanceLevel = 'Average';
-                    badgeClass = 'bg-warning';
-                } else {
-                    performanceLevel = 'Needs Improvement';
-                    badgeClass = 'bg-danger';
-                }
-                
-                const performanceDisplay = document.getElementById('performanceDisplay');
-                performanceDisplay.textContent = performanceLevel;
-                performanceDisplay.className = 'ms-2 badge ' + badgeClass;
-            } else {
-                document.getElementById('averageDisplay').textContent = '—';
-                document.getElementById('performanceDisplay').textContent = '—';
-                document.getElementById('performanceDisplay').className = 'ms-2 badge';
-            }
-        }
-        
-        // Form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const quiz = document.getElementById('quiz').value;
-            const homework = document.getElementById('homework').value;
-            const midterm = document.getElementById('midterm').value;
-            const final = document.getElementById('final').value;
-            
-            // Check if at least one score is provided
-            if (!quiz && !homework && !midterm && !final) {
-                e.preventDefault();
-                alert('Please enter at least one score (Quiz, Homework, Midterm, or Final).');
-                return false;
-            }
-            
-            return true;
-        });
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            calculateAverage();
-        });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

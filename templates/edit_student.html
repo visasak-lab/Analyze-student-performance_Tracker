@@ -2,84 +2,482 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Student - EduTrack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Edit Student - Student Performance Tracker</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css"
+      rel="stylesheet"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+Ea8AhIocOi+3X8F0V5Z3k9u5u5u5"
+      crossorigin="anonymous"
+    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1f2937;
+            min-height: 100vh;
+            padding: 1rem;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .glass-container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 15px 15px;
+            transform: rotate(25deg);
+        }
+        
+        .header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .header h2 i {
+            font-size: 1.4rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-3px);}
+            60% {transform: translateY(-2px);}
+        }
+        
         .form-container {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-label i {
+            color: #667eea;
+            width: 16px;
+            font-size: 0.9rem;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
             background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: 2rem auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 4px 8px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .form-input:disabled {
+            background: #f9fafb;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+        
+        .student-id-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+        
+        .gender-selector {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .gender-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .gender-option:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+        
+        .gender-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(107, 114, 128, 0.4);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            color: #374151;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: white;
+        }
+        
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0.75rem;
+            }
+            
+            .glass-container {
+                border-radius: 14px;
+            }
+            
+            .form-container {
+                padding: 1.25rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                flex: none;
+            }
+            
+            .gender-selector {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 1.25rem;
+            }
+            
+            .header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .form-container {
+                padding: 1rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1.25rem;
+            }
         }
     </style>
 </head>
-<body style="background: #f8f9fa;">
-    <div class="container">
-        <!-- Back Button -->
-        <div class="mt-4">
-            <a href="{{ url_for('student_details', student_id=student.student_id) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Student Details
-            </a>
-        </div>
+<body>
 
+    <!-- Back Button -->
+    <div style="max-width: 500px; width: 100%; margin: 0 auto 1rem auto;">
+        <a href="{{ url_for('students_list') }}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Students List
+        </a>
+    </div>
+
+    <div class="glass-container">
+        <div class="header">
+            <h2>
+                <i class="fas fa-user-edit"></i>
+                Edit Student Profile
+            </h2>
+        </div>
+        
         <div class="form-container">
-            <h3 class="mb-4 text-center">
-                <i class="fas fa-user-edit me-2"></i>Edit Student Profile
-            </h3>
-            
-            <!-- Student ID Display -->
-            <div class="alert alert-info">
-                <strong>Student ID:</strong> {{ student.student_id }}
+            <!-- Student Avatar -->
+            <div class="student-avatar">
+                <i class="fas fa-user-graduate"></i>
             </div>
             
-            <form method="POST" action="{{ url_for('edit_student', student_id=student.student_id) }}">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">Full Name *</label>
-                        <input type="text" class="form-control" id="name" name="name" 
-                               value="{{ student.name }}" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="class" class="form-label">Class *</label>
-                        <select class="form-select" id="class" name="class" required>
-                            <option value="A" {% if student.class == 'A' %}selected{% endif %}>Class A</option>
-                            <option value="B" {% if student.class == 'B' %}selected{% endif %}>Class B</option>
-                            <option value="C" {% if student.class == 'C' %}selected{% endif %}>Class C</option>
-                        </select>
-                    </div>
-                    <div class="col-12 mb-4">
-                        <label class="form-label">Gender *</label>
-                        <div class="d-flex gap-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="M" id="male" 
-                                       {% if student.gender == 'M' %}checked{% endif %} required>
-                                <label class="form-check-label" for="male">Male</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="F" id="female"
-                                       {% if student.gender == 'F' %}checked{% endif %}>
-                                <label class="form-check-label" for="female">Female</label>
-                            </div>
-                        </div>
+            <form method="POST" action="{{ url_for('edit_student', student_id=student.student_id) }}" id="editForm">
+                <!-- Student ID Display -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-card"></i>
+                        Student ID
+                    </label>
+                    <input type="text" class="form-input" value="{{ student.student_id }}" disabled>
+                    <div class="student-id-badge">
+                        <i class="fas fa-fingerprint"></i>
+                        ID: {{ student.student_id }}
                     </div>
                 </div>
-
-                <div class="d-flex justify-content-between">
-                    <a href="{{ url_for('student_details', student_id=student.student_id) }}" class="btn btn-secondary">
-                        <i class="fas fa-times me-2"></i>Cancel
-                    </a>
+                
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-signature"></i>
+                        Full Name
+                    </label>
+                    <input type="text" name="name" class="form-input" value="{{ student.name }}" required 
+                           placeholder="Enter student's full name">
+                </div>
+                
+                <!-- Class Field -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-school"></i>
+                        Class
+                    </label>
+                    <input type="text" name="class" class="form-input" value="{{ student.class }}" required 
+                           placeholder="Enter class name">
+                </div>
+                
+                <!-- Gender Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-venus-mars"></i>
+                        Gender
+                    </label>
+                    <div class="gender-selector">
+                        <div class="gender-option {% if student.gender == 'M' %}selected{% endif %}" 
+                             data-value="M" onclick="selectGender('M')">
+                            <i class="fas fa-mars"></i>
+                            Male
+                        </div>
+                        <div class="gender-option {% if student.gender == 'F' %}selected{% endif %}" 
+                             data-value="F" onclick="selectGender('F')">
+                            <i class="fas fa-venus"></i>
+                            Female
+                        </div>
+                    </div>
+                    <input type="hidden" name="gender" id="genderInput" value="{{ student.gender }}" required>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="button-group">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Update Profile
+                        <i class="fas fa-save"></i>
+                        Update Profile
                     </button>
+                    <a href="{{ url_for('students_list') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gender selection functionality
+        function selectGender(gender) {
+            document.querySelectorAll('.gender-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.querySelector(`.gender-option[data-value="${gender}"]`).classList.add('selected');
+            document.getElementById('genderInput').value = gender;
+        }
+        
+        // Form submission animation
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            submitBtn.disabled = true;
+        });
+        
+        // Add floating label effect
+        document.querySelectorAll('.form-input, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+        
+        // Add some confetti effect on successful submission (if we had one)
+        function celebrate() {
+            if (document.querySelector('.flash-success')) {
+                // Simple celebration effect
+                document.querySelector('.student-avatar').style.animation = 'bounce 0.5s ease 3';
+            }
+        }
+        
+        // Run celebration if there's a success message
+        setTimeout(celebrate, 500);
+    </script>
 </body>
 </html>
