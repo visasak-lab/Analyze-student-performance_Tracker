@@ -10,6 +10,9 @@
         :root {
             --primary: #4361ee;
             --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --info: #7209b7;
+            --warning: #f72585;
         }
         
         .login-container {
@@ -18,42 +21,236 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            transform: rotate(25deg);
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: rotate(25deg) translateX(0); }
+            100% { transform: rotate(25deg) translateX(-20px); }
         }
         
         .login-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
         
         .logo {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
         
         .logo i {
-            font-size: 3rem;
-            color: var(--primary);
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+        
+        .logo h3 {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .input-group-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            border-radius: 12px 0 0 12px;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .demo-info {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .demo-info h6 {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .demo-account:last-child {
+            border-bottom: none;
+        }
+        
+        .account-type {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .account-credentials {
+            font-family: 'Courier New', monospace;
+            background: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatShape 15s infinite linear;
+        }
+        
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            right: 10%;
+            animation-delay: -5s;
+        }
+        
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -10s;
+        }
+        
+        @keyframes floatShape {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <!-- Floating Shapes -->
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        
         <div class="login-card">
             <div class="logo">
                 <i class="fas fa-graduation-cap"></i>
                 <h3>EduTrack</h3>
-                <p class="text-muted">Student Performance Analysis</p>
+                <p>Student Performance Analysis</p>
             </div>
             
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mb-4">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
@@ -62,31 +259,39 @@
             {% endwith %}
             
             <form method="POST">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
+                <div class="mb-4">
+                    <label for="username" class="form-label fw-semibold">Username</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <input type="text" class="form-control" id="username" name="username" required 
+                               placeholder="Enter your username">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password" required 
+                               placeholder="Enter your password">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                
+                <button type="submit" class="btn btn-login text-white w-100 py-2 mb-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
                 </button>
             </form>
             
-            <div class="mt-4 text-center">
-                <small class="text-muted">
-                    <strong>Demo Accounts:</strong><br>
-                    Admin: <code>admin</code> / <code>demo123</code><br>
-                    Student: <code>PNC2026_004</code> / <code>demo123</code>
-                </small>
+            <div class="demo-info">
+                <h6><i class="fas fa-key me-2"></i>Demo Accounts</h6>
+                <div class="demo-account">
+                    <span class="account-type">Administrator</span>
+                    <code class="account-credentials">admin / demo123</code>
+                </div>
+                <div class="demo-account">
+                    <span class="account-type">Student</span>
+                    <code class="account-credentials">PNC2026_004 / demo123</code>
+                </div>
             </div>
         </div>
     </div>

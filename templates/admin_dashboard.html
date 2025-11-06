@@ -14,6 +14,12 @@
             --success: #4cc9f0;
             --info: #7209b7;
             --warning: #f72585;
+            --light-bg: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .sidebar {
@@ -21,36 +27,229 @@
             color: white;
             min-height: 100vh;
             padding: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 250px;
         }
         
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             padding: 1rem 1.5rem;
             border-left: 4px solid transparent;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            margin: 0.2rem 0.5rem;
+            border-radius: 8px;
         }
         
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+        .sidebar .nav-link:hover {
             color: white;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
             border-left-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-brand {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .sidebar-brand h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .sidebar-brand small {
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            background: var(--light-bg);
+        }
+        
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
         }
         
         .stat-card {
-            border-radius: 15px;
+            border-radius: 16px;
             border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
         
         .chart-container {
             position: relative;
             height: 300px;
             width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .dashboard-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .table-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-custom thead th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .table-custom tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table-custom tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+        
+        .badge-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f8f9fa;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
@@ -59,13 +258,13 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar">
-                <div class="d-flex flex-column p-3">
-                    <div class="text-center mb-4">
+                <div class="d-flex flex-column p-0">
+                    <div class="sidebar-brand">
                         <h4><i class="fas fa-graduation-cap me-2"></i>EduTrack</h4>
                         <small>Admin Portal</small>
                     </div>
                     
-                    <ul class="nav nav-pills flex-column">
+                    <ul class="nav nav-pills flex-column px-2">
                         <li class="nav-item">
                             <a href="{{ url_for('admin_dashboard') }}" class="nav-link active">
                                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
@@ -76,167 +275,202 @@
                                 <i class="fas fa-users me-2"></i>Students
                             </a>
                         </li>
-                        <li class="nav-item mt-4">
-                            <a href="{{ url_for('logout') }}" class="nav-link">
-                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        <li class="nav-item">
+                            <a href="{{ url_for('score_details') }}" class="nav-link">
+                                <i class="fas fa-chart-bar me-2"></i>Performance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('add_student') }}" class="nav-link">
+                                <i class="fas fa-user-plus me-2"></i>Add Student
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('admin_add_score') }}" class="nav-link">
+                                <i class="fas fa-plus-circle me-2"></i>Add Scores
                             </a>
                         </li>
                     </ul>
+                    
+                    <div class="mt-auto p-3">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                {{ username[0]|upper }}
+                            </div>
+                            <div class="user-info">
+                                <div class="fw-semibold">{{ username }}</div>
+                                <small class="opacity-75">Administrator</small>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="nav-link mt-2 text-center"
+                           onclick="return confirm('Are you sure you want to logout?');">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10" style="background: #f8f9fa; min-height: 100vh;">
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- Header -->
+                <nav class="navbar-custom">
+                    <div class="container-fluid">
+                        <h1 class="h3 mb-0">Admin Dashboard</h1>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-3">Welcome back, {{ username }}</span>
+                            <span class="badge bg-primary">Admin</span>
+                        </div>
+                    </div>
+                </nav>
+
                 <div class="container-fluid py-4">
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1>Admin Dashboard</h1>
-                        <div class="text-end">
-                            <span class="text-muted">Welcome, {{ username }}</span>
-                            <span class="badge bg-primary ms-2">Admin</span>
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mb-4">
+                                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Quick Stats -->
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="mb-1">{{ total_students }}</h3>
+                                        <p class="text-muted mb-0">Total Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="mb-1">{{ total_scores }}</h3>
+                                        <p class="text-muted mb-0">Total Scores</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="mb-1">{{ "%.1f"|format(overall_avg) }}%</h3>
+                                        <p class="text-muted mb-0">Overall Average</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                        <i class="fas fa-school"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="mb-1">{{ class_labels|length }}</h3>
+                                        <p class="text-muted mb-0">Active Classes</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Stats Cards -->
+                    <!-- Charts Section -->
                     <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <div class="card stat-card bg-primary text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="card-title">Total Students</h6>
-                                            <h2>{{ total_students }}</h2>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="fas fa-users fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card stat-card bg-success text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="card-title">Total Scores</h6>
-                                            <h2>{{ total_scores }}</h2>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="fas fa-chart-bar fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card stat-card bg-info text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="card-title">Overall Average</h6>
-                                            <h2>{{ "%.1f"|format(overall_avg) }}%</h2>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="fas fa-chart-line fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card stat-card bg-warning text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="card-title">Classes</h6>
-                                            <h2>{{ class_labels|length }}</h2>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="fas fa-school fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts -->
-                    <div class="row">
                         <div class="col-md-6">
-                            <div class="card stat-card mb-4">
-                                <div class="card-header bg-white">
-                                    <h5 class="card-title mb-0">Performance Distribution</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-container">
-                                        <canvas id="performanceChart"></canvas>
-                                    </div>
+                            <div class="dashboard-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-chart-pie"></i>
+                                    Performance Distribution
+                                </h5>
+                                <div class="chart-container">
+                                    <canvas id="performanceChart"></canvas>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="card stat-card mb-4">
-                                <div class="card-header bg-white">
-                                    <h5 class="card-title mb-0">Class Averages</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-container">
-                                        <canvas id="classChart"></canvas>
-                                    </div>
+                            <div class="dashboard-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Class Averages
+                                </h5>
+                                <div class="chart-container">
+                                    <canvas id="classChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Recent Activities -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card stat-card">
-                                <div class="card-header bg-white">
-                                    <h5 class="card-title mb-0">Recent Activities</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Student</th>
-                                                    <th>Class</th>
-                                                    <th>Term</th>
-                                                    <th>Average</th>
-                                                    <th>Performance</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for activity in recent_activities %}
-                                                <tr>
-                                                    <td>{{ activity.name }}</td>
-                                                    <td>{{ activity.class }}</td>
-                                                    <td>{{ activity.term }}</td>
-                                                    <td><strong>{{ "%.1f"|format(activity.average) }}%</strong></td>
-                                                    <td>
-                                                        <span class="badge bg-{{ 'success' if activity.performance_level == 'Excellent' else 'info' if activity.performance_level == 'Good' else 'warning' if activity.performance_level == 'Average' else 'danger' }}">
-                                                            {{ activity.performance_level }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                {% else %}
-                                                <tr>
-                                                    <td colspan="5" class="text-center text-muted py-3">
-                                                        <i class="fas fa-info-circle me-2"></i>No recent activities found
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="dashboard-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-clock"></i>
+                            Recent Activities
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Class</th>
+                                        <th>Term</th>
+                                        <th>Quiz</th>
+                                        <th>Homework</th>
+                                        <th>Midterm</th>
+                                        <th>Final</th>
+                                        <th>Average</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activity in recent_activities %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ activity.name }}</td>
+                                        <td>Class {{ activity.class }}</td>
+                                        <td>{{ activity.term }}</td>
+                                        <td>{{ "%.1f"|format(activity.quiz) if activity.quiz else 'N/A' }}</td>
+                                        <td>{{ "%.1f"|format(activity.homework) if activity.homework else 'N/A' }}</td>
+                                        <td>{{ "%.1f"|format(activity.midterm) if activity.midterm else 'N/A' }}</td>
+                                        <td>{{ "%.1f"|format(activity.final) if activity.final else 'N/A' }}</td>
+                                        <td><strong>{{ "%.1f"|format(activity.average) }}%</strong></td>
+                                        <td>
+                                            <span class="badge-custom bg-{{ 'success' if activity.performance_level == 'Excellent' else 'info' if activity.performance_level == 'Good' else 'warning' if activity.performance_level == 'Average' else 'danger' }}">
+                                                {{ activity.performance_level }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">
+                                            <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
+                                            <p class="text-muted mb-0">No recent activities found</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -259,16 +493,24 @@
                             {{ performance_counts.get('Average', 0) }},
                             {{ performance_counts.get('Poor', 0) }}
                         ],
-                        backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545']
+                        backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
                         }
-                    }
+                    },
+                    cutout: '65%'
                 }
             });
 
@@ -281,11 +523,14 @@
                     datasets: [{
                         label: 'Average Score',
                         data: {{ class_scores | tojson }},
-                        backgroundColor: '#007bff'
+                        backgroundColor: '#4361ee',
+                        borderRadius: 8,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -293,12 +538,26 @@
                             title: {
                                 display: true,
                                 text: 'Average Score (%)'
+                            },
+                            grid: {
+                                drawBorder: false
                             }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     }
                 }
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
