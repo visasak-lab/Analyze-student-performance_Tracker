@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student - EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+    </style>
+</head>
+<body style="background: #f8f9fa;">
+    <div class="container">
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{{ url_for('student_details', student_id=student.student_id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Student Details
+            </a>
+        </div>
+
+        <div class="form-container">
+            <h3 class="mb-4 text-center">
+                <i class="fas fa-user-edit me-2"></i>Edit Student Profile
+            </h3>
+            
+            <!-- Student ID Display -->
+            <div class="alert alert-info">
+                <strong>Student ID:</strong> {{ student.student_id }}
+            </div>
+            
+            <form method="POST" action="{{ url_for('edit_student', student_id=student.student_id) }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               value="{{ student.name }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="class" class="form-label">Class *</label>
+                        <select class="form-select" id="class" name="class" required>
+                            <option value="A" {% if student.class == 'A' %}selected{% endif %}>Class A</option>
+                            <option value="B" {% if student.class == 'B' %}selected{% endif %}>Class B</option>
+                            <option value="C" {% if student.class == 'C' %}selected{% endif %}>Class C</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-4">
+                        <label class="form-label">Gender *</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="M" id="male" 
+                                       {% if student.gender == 'M' %}checked{% endif %} required>
+                                <label class="form-check-label" for="male">Male</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="F" id="female"
+                                       {% if student.gender == 'F' %}checked{% endif %}>
+                                <label class="form-check-label" for="female">Female</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('student_details', student_id=student.student_id) }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

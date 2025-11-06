@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: white;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .score-input {
+            max-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="d-flex flex-column p-3">
+                    <div class="text-center mb-4">
+                        <h4><i class="fas fa-graduation-cap me-2"></i>EduTrack</h4>
+                        <small>Admin Portal</small>
+                    </div>
+                    
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('list_students') }}" class="nav-link">
+                                <i class="fas fa-users me-2"></i>Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('add_student') }}" class="nav-link active">
+                                <i class="fas fa-user-plus me-2"></i>Add Student
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a href="{{ url_for('logout') }}" class="nav-link">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10" style="background: #f8f9fa; min-height: 100vh;">
+                <div class="container-fluid py-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Add New Student</h1>
+                        <div class="text-end">
+                            <span class="text-muted">Welcome, {{ username }}</span>
+                            <span class="badge bg-primary ms-2">Admin</span>
+                        </div>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="form-container">
+                        <h3 class="mb-4">Student Registration Form</h3>
+                        
+                        <form action="{{ url_for('add_student') }}" method="POST">
+                            <!-- Basic Information -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2">Basic Information</h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="student_id" class="form-label">Student ID *</label>
+                                    <input type="text" class="form-control" id="student_id" name="student_id" 
+                                           placeholder="PNC2026_001" required pattern="PNC2026_\d{3}">
+                                    <small class="text-muted">Format: PNC2026_XXX (e.g., PNC2026_077)</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           placeholder="JOHN DOE" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="class" class="form-label">Class *</label>
+                                    <select class="form-select" id="class" name="class" required>
+                                        <option value="">Select Class</option>
+                                        <option value="A">Class A</option>
+                                        <option value="B">Class B</option>
+                                        <option value="C">Class C</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender *</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" value="M" id="male" required>
+                                            <label class="form-check-label" for="male">Male</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" value="F" id="female">
+                                            <label class="form-check-label" for="female">Female</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="email" class="form-label">Email (Optional)</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           placeholder="john.doe@school.edu">
+                                    <small class="text-muted">Used to create student login account</small>
+                                </div>
+                            </div>
+
+                            <!-- Academic Scores (Optional) -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2">Academic Scores (Optional)</h5>
+                                    <p class="text-muted">You can add initial scores now or later</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="term" class="form-label">Term</label>
+                                    <select class="form-select" id="term" name="term">
+                                        <option value="">Select Term</option>
+                                        <option value="Term 1">Term 1</option>
+                                        <option value="Term 2">Term 2</option>
+                                        <option value="Term 3">Term 3</option>
+                                        <option value="Term 4">Term 4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="quiz" class="form-label">Quiz Score</label>
+                                    <input type="number" class="form-control score-input" id="quiz" name="quiz" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="homework" class="form-label">Homework</label>
+                                    <input type="number" class="form-control score-input" id="homework" name="homework" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="midterm" class="form-label">Midterm</label>
+                                    <input type="number" class="form-control score-input" id="midterm" name="midterm" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="final" class="form-label">Final</label>
+                                    <input type="number" class="form-control score-input" id="final" name="final" 
+                                           min="0" max="100" step="0.1" placeholder="0-100">
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('list_students') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Students
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Student
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
