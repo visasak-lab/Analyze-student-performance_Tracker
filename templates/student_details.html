@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ student.name }} - Student Details - EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: white;
+        }
+        
+        .dashboard-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="d-flex flex-column p-3">
+                    <div class="text-center mb-4">
+                        <h4><i class="fas fa-graduation-cap me-2"></i>EduTrack</h4>
+                        <small>Admin Portal</small>
+                    </div>
+                    
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('list_students') }}" class="nav-link">
+                                <i class="fas fa-users me-2"></i>Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('add_student') }}" class="nav-link">
+                                <i class="fas fa-user-plus me-2"></i>Add Student
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a href="{{ url_for('logout') }}" class="nav-link">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10" style="background: #f8f9fa; min-height: 100vh;">
+                <div class="container-fluid py-4">
+                    <!-- Back Button -->
+                    <div class="mb-4">
+                        <a href="{{ url_for('list_students') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Students List
+                        </a>
+                    </div>
+
+                    <!-- Student Profile Header -->
+                    <div class="dashboard-card" style="padding: 24px;">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h1 class="h2 mb-2">{{ student.name }}</h1>
+                                <p class="text-muted mb-3">
+                                    <strong>Student ID:</strong> {{ student.student_id }} | 
+                                    <strong>Class:</strong> {{ student.class }} | 
+                                    <strong>Gender:</strong> {{ 'Male' if student.gender == 'M' else 'Female' }}
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <h4 class="text-primary mb-1">{{ "%.1f"|format(student.avg_score) if student.avg_score else 'N/A' }}%</h4>
+                                            <small>Average Score</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <h4 class="text-success mb-1">{{ "%.1f"|format(student.highest_score) if student.highest_score else 'N/A' }}%</h4>
+                                            <small>Highest Score</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <h4 class="text-warning mb-1">{{ "%.1f"|format(student.lowest_score) if student.lowest_score else 'N/A' }}%</h4>
+                                            <small>Lowest Score</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <h4 class="text-info mb-1">{{ student.score_count or 0 }}</h4>
+                                            <small>Total Records</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="btn-group-vertical">
+                                    <a href="{{ url_for('edit_student', student_id=student.student_id) }}" class="btn btn-warning mb-2">
+                                        <i class="fas fa-edit me-2"></i>Edit Student
+                                    </a>
+                                    <button class="btn btn-danger" onclick="deleteStudent('{{ student.student_id }}', '{{ student.name }}')">
+                                        <i class="fas fa-trash me-2"></i>Delete Student
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scores Table -->
+                    <div class="dashboard-card" style="padding: 24px;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">
+                                <i class="fas fa-table me-2"></i>Score Records
+                            </h4>
+                            <span class="badge bg-primary">{{ student.scores|length if student.scores else 0 }} records</span>
+                        </div>
+                        
+                        {% if student.scores and student.scores|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Term</th>
+                                        <th>Quiz</th>
+                                        <th>Homework</th>
+                                        <th>Midterm</th>
+                                        <th>Final</th>
+                                        <th>Average</th>
+                                        <th>Performance</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for score in student.scores %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ score.term }}</td>
+                                        <td>
+                                            {% if score.quiz %}
+                                                {{ "%.1f"|format(score.quiz) }}%
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if score.homework %}
+                                                {{ "%.1f"|format(score.homework) }}%
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if score.midterm %}
+                                                {{ "%.1f"|format(score.midterm) }}%
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if score.final %}
+                                                {{ "%.1f"|format(score.final) }}%
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="fw-bold">
+                                            <span class="{% if score.average >= 80 %}text-success{% elif score.average >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                                {{ "%.1f"|format(score.average) }}%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if score.performance_level == 'Excellent' %}
+                                                <span class="badge bg-success">Excellent</span>
+                                            {% elif score.performance_level == 'Good' %}
+                                                <span class="badge bg-info">Good</span>
+                                            {% elif score.performance_level == 'Average' %}
+                                                <span class="badge bg-warning">Average</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Poor</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted">
+                                            <small>{{ score.date if score.date else 'Unknown' }}</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line fa-3x mb-3" style="color: #d1d5db;"></i>
+                            <p class="h5 mb-2">No scores recorded yet</p>
+                            <p class="text-muted">Add the first score for this student to track their performance.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteStudent(studentId, studentName) {
+            if (confirm(`Are you sure you want to delete student "${studentName}" (${studentId})? This action cannot be undone.`)) {
+                window.location.href = "{{ url_for('delete_student', student_id='') }}" + studentId;
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
