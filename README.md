@@ -77,3 +77,15 @@ After analyzing data, the teacher found the % of students improved their math sc
 ## Conclusion
 
 Student performance analysis is helpful for improving teaching and supporting students to achieve better results.
+
+## 👤 Default Accounts
+
+### Admin Account
+- Username : admin
+
+- Password : demo123
+
+### Test User Account
+- Username : PNC2026_004
+
+- Password : 123456
