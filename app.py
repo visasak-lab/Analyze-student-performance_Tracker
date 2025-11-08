@@ -42,6 +42,7 @@ def check_password(stored_password, provided_password):
 def index():
     return redirect(url_for('login'))
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -91,6 +92,7 @@ def login():
             conn.close()
     
     return render_template('login.html')
+
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
@@ -843,28 +845,17 @@ def student_dashboard():
                          recent_scores=recent_scores,
                          username=session.get('username'))
 
-
 @app.route('/add-student', methods=['GET', 'POST'])
 def add_student():
     if 'user_id' not in session or session.get('role') != 'admin':
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        # Get all form data
+        # Get form data - only required fields
         student_id = request.form.get('student_id')
         name = request.form.get('name')
         student_class = request.form.get('class')
         gender = request.form.get('gender')
-        email = request.form.get('email')
-        
-        # Score data
-        term = request.form.get('term')
-        quiz = request.form.get('quiz')
-        homework = request.form.get('homework')
-        midterm = request.form.get('midterm')
-        final = request.form.get('final')
-        average = request.form.get('average')
-        performance_level = request.form.get('performance_level')
         
         conn = get_db_connection()
         if not conn:
@@ -887,58 +878,6 @@ def add_student():
                 INSERT INTO students (student_id, name, class, gender) 
                 VALUES (%s, %s, %s, %s)
             """, (student_id, name, student_class, gender))
-            
-            # Insert score data if provided
-            if term and (quiz or homework or midterm or final):
-                # Use calculated average if provided, otherwise calculate it
-                if not average:
-                    scores = []
-                    if quiz: scores.append(float(quiz))
-                    if homework: scores.append(float(homework))
-                    if midterm: scores.append(float(midterm))
-                    if final: scores.append(float(final))
-                    if scores:
-                        average = sum(scores) / len(scores)
-                
-                # Determine performance level if not provided
-                if not performance_level and average:
-                    avg_float = float(average)
-                    if avg_float >= 85:
-                        performance_level = 'Excellent'
-                    elif avg_float >= 70:
-                        performance_level = 'Good'
-                    elif avg_float >= 50:
-                        performance_level = 'Average'
-                    else:
-                        performance_level = 'Poor'
-                
-                cursor.execute("""
-                    INSERT INTO scores 
-                    (student_id, term, quiz, homework, midterm, final, average, performance_level)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    student_id, term, 
-                    float(quiz) if quiz else None,
-                    float(homework) if homework else None,
-                    float(midterm) if midterm else None,
-                    float(final) if final else None,
-                    float(average) if average else None,
-                    performance_level
-                ))
-            
-            # Create user account if email is provided
-            if email:
-                # Check if user already exists
-                cursor.execute("SELECT id FROM users WHERE student_id = %s", (student_id,))
-                existing_user = cursor.fetchone()
-                
-                if not existing_user:
-                    # Create a default password
-                    default_password = 'student123'
-                    cursor.execute("""
-                        INSERT INTO users (username, password, role, student_id, email) 
-                        VALUES (%s, %s, 'student', %s, %s)
-                    """, (student_id, default_password, student_id, email))
             
             conn.commit()
             flash(f'Student {name} ({student_id}) added successfully!', 'success')
